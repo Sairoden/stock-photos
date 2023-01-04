@@ -17,7 +17,7 @@ function App() {
       const res = await fetch(url);
       const data = await res.json();
 
-      console.log(data);
+      setPhotos(data);
     } catch (err) {
       console.log(err);
     }
@@ -29,10 +29,33 @@ function App() {
     fetchImages();
   }, []);
 
-  return <h2>stock photos starter</h2>;
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log("hello");
+  };
+
+  return (
+    <main>
+      <section className="search">
+        <form className="search-form">
+          <input type="text" placeholder="search" className="form-input" />
+          <button className="submit-btn" onClick={handleSubmit}>
+            <FaSearch />
+          </button>
+        </form>
+      </section>
+      <section className="photos">
+        <div className="photos-center">
+          {photos.map(image => (
+            <Photo key={image.id} {...image} />
+          ))}
+        </div>
+        {loading && <h2 className="loading">Loading...</h2>}
+      </section>
+    </main>
+  );
 }
 
 export default App;
 
-// https://api.unsplash.com/photos/?client_id=E7Pz0-OCgHG462w35f3v_6EYdFIJgylJFR_l4nicFH8
-// 18 INITIAL FETCH
+// 20 ka naa
