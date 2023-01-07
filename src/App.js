@@ -8,16 +8,23 @@ const searchUrl = `https://api.unsplash.com/search/photos/`;
 function App() {
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
 
   const fetchImages = async () => {
     setLoading(true);
+    let url;
+    const urlPage = `&page=${page}`;
+    url = `${mainUrl}${clientID}${urlPage}`;
     try {
-      let url = `${mainUrl}${clientID}`;
-
       const res = await fetch(url);
       const data = await res.json();
 
-      setPhotos(data);
+      setPhotos(oldPhotos => {
+        if (query) return [...oldPhotos, ...data.results];
+
+        return [...oldPhotos, ...data];
+      });
     } catch (err) {
       console.log(err);
     }
@@ -27,7 +34,7 @@ function App() {
 
   useEffect(() => {
     fetchImages();
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     const event = window.addEventListener("scroll", () => {
@@ -35,21 +42,27 @@ function App() {
         !loading &&
         window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
       )
-        console.log("it worked");
+        setPage(oldPage => oldPage + 1);
     });
     return () => window.removeEventListener("scroll", event);
   }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log("hello");
+    fetchImages();
   };
 
   return (
     <main>
       <section className="search">
         <form className="search-form">
-          <input type="text" placeholder="search" className="form-input" />
+          <input
+            type="text"
+            placeholder="search"
+            className="form-input"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
           <button className="submit-btn" onClick={handleSubmit}>
             <FaSearch />
           </button>
@@ -69,4 +82,4 @@ function App() {
 
 export default App;
 
-// 20 ka naa
+// 24 ka na
